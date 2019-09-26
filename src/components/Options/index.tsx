@@ -146,12 +146,14 @@ export default class Options extends Component<Props, State> {
                 {preprocessorState.resize.enabled ?
                   <ResizeOptionsComponent
                     isVector={Boolean(source && source.vectorImage)}
-                    aspect={source ? source.processed.width / source.processed.height : 1}
+                    inputWidth={source ? source.processed.width : 1}
+                    inputHeight={source ? source.processed.height : 1}
                     options={preprocessorState.resize}
                     onChange={this.onResizeOptionsChange}
                   />
                 : null}
               </Expander>
+
               <label class={style.sectionEnabler}>
                 <Checkbox
                   name="quantizer.enable"
@@ -178,6 +180,7 @@ export default class Options extends Component<Props, State> {
           {encoderSupportMap ?
             <Select value={encoderState.type} onChange={this.onEncoderTypeChange} large>
               {encoders.filter(encoder => encoderSupportMap[encoder.type]).map(encoder => (
+                // tslint:disable-next-line:jsx-key
                 <option value={encoder.type}>{encoder.label}</option>
               ))}
             </Select>
