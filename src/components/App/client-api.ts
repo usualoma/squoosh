@@ -42,6 +42,10 @@ export class API {
    */
   constructor(private _app: App) {}
 
+  back() {
+    window.history.back();
+  }
+
   /**
    * Loads a given file into Squoosh.
    * @param blob The `Blob` to load
