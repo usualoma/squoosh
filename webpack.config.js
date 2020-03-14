@@ -41,7 +41,7 @@ module.exports = async function (_, env) {
       filename: isProd ? '[name].[chunkhash:5].js' : '[name].js',
       chunkFilename: '[name].[chunkhash:5].js',
       path: path.join(__dirname, 'build'),
-      publicPath: '/mt-plugin-Squoosh/squoosh-sdk/0.0.1/',
+      publicPath: process.env.PUBLIC_PATH || '/',
       globalObject: 'self'
     },
     resolve: {
