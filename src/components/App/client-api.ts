@@ -32,6 +32,31 @@ function addRemovableGlobalListener<
   return () => document.removeEventListener(name, listener);
 }
 
+async function querySelectorWait(selector: string): Promise<HTMLInputElement> {
+  const el = document.querySelector(selector);
+  if (el) {
+    return el as HTMLInputElement;
+  }
+
+  return new Promise<HTMLInputElement>(resolve => {
+    const intervalId = setInterval(() => {
+      const el = document.querySelector(selector);
+      if (el) {
+        clearInterval(intervalId);
+        resolve(el as HTMLInputElement);
+      }
+    }, 100);
+  });
+}
+
+function dispatchInputEvent(elm: HTMLInputElement): void {
+  const ev = new Event("input", {
+    bubbles: true,
+    cancelable: true,
+  });
+  elm.dispatchEvent(ev);
+}
+
 /**
  * The API class contains the methods that are exposed via Comlink to the
  * outside world.
@@ -42,8 +67,47 @@ export class API {
    */
   constructor(private _app: App) {}
 
+  /**
+   * reset
+   */
   back() {
     window.history.back();
+  }
+
+  /**
+   * resizeToLimit
+   * @param width  Max width
+   * @param height Max height
+   */
+  async resizeToLimit(width: number, height: number) {
+    const enableElm = await querySelectorWait(`[name="resize.enable"]`);
+    if (!enableElm.checked) {
+      enableElm.click();
+    }
+
+    const widthElm = await querySelectorWait(`[name="width"]`);
+    const heightElm = await querySelectorWait(`[name="height"]`);
+
+    if (
+      parseInt(widthElm.value) / parseInt(heightElm.value) >=
+      width / height
+    ) {
+      widthElm.value = width.toString();
+      dispatchInputEvent(widthElm);
+    } else {
+      heightElm.value = height.toString();
+      dispatchInputEvent(heightElm);
+    }
+  }
+
+  /**
+   * set quality
+   * @param quality value
+   */
+  async setQuality(quality: number) {
+    const qualityElm = await querySelectorWait(`[name="quality"]`);
+    qualityElm.value = quality.toString();
+    dispatchInputEvent(qualityElm);
   }
 
   /**
